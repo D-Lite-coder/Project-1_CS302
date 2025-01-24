@@ -1,82 +1,80 @@
 #include <iostream>
-#include <set>
+#include <map>
 #include <sstream>
-//test
+
 using namespace std;
-class Song {
+
+string replaceUnderscores(string str) {
+
+  for (size_t i = 0; i < str.length(); ++i) {
+	          if (str[i] == '_') str[i] = ' ';
 	
-	protected:
+  }
+      return str;
+}
 
-		string name, time;
-		int trackNum;
+int timeToSec(string timestr) {
 
-	public:
+	int min, sec;
 
-		Song(string n, string t, int track)
-		{
-			name = n;
-			time = t;
-			trackNum = track;
-		}
+	char colon;
 
-		string getName() const { return name; }
-		string getTime() const { return time; }
-		string getTrackNum() const { return trackNum; }
-	
+	istringstream ss(timestr);
 
+	ss >> min >> colon >> sec;
 
+	return min * 60 + sec;
+}
 
-};
-
-class Album {
-	
-	protected:
-		
-		string name;
-		map<int, Song> songs;
-
-	public:
-
-		Album(string n)
-		{
-			name = n
-		}
-
-		string getName() const { return name; }
-
-
-};
-
-class Artist {
-
-	public:
-	
-		Artist(string name)
-		{
-			artistName = name;
-		}
-
-	protected:
-
-		string artistName;
-		set<Album> Albums;
-		
-
-};
-
-int main()
+string secToTime(int time)
 {
-nt main() {
+	int min, sec;
+	
+	min = time / 60;
+	sec = time % 60;
+
+	return to_string(min) + ":" + (sec < 10 ? "0" : "") + to_string(sec);
+}
+
+
+int main() {
+
+	int timeInSec, track;
 
 	string line;
 
-	string title, time, artist, album, genre, track
+	string title, time, artist, album, genre;
+	
+    map<string, map<string, int>> songs; //Song title + (Genre + Duration in sec)
+	map<string, map<int, string>> albums; //Album title + (Track number + Song title)
+	map<string, map<string, int>> artists; //Artist name + (Album + Total time)
 
-	while (getline(cin, line))
-	{
+	map<int, map<string, int>>::const_iterator songIt;
+	map<string, map<int, string>>::const_iterator albumIt;
+	map<string, map<string, int>>::const_iterator artistIt;
 
-			stringstream musicLine(line);
-			musicLine >> title >> time >> artist >> album >> genre >> track
+	while (getline(cin, line))	{
+
+		stringstream musicLine(line);
+
+		musicLine >> title >> time >> artist >> album >> genre >> track;
+	
+		title = replaceUnderscores(title);
+		artist = replaceUnderscores(artist);
+		album = replaceUnderscores(album);
+		genre = replaceUnderscores(genre);
+
+		timeInSec = timeToSec(time);
+
+		songs[title][genre] = timeInSec;
+		artists[artist][album] += timeInSec;
+		albums[album][track] = title;
+
+	    cout << "Title: " << title << ", Time: " << time << ", Artist: " << artist << ", Album: " << album << ", Genre: " << genre << ", Track: " << track << endl;
+
+	}
+
 
 return 0;
+
 }

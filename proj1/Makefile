@@ -2,7 +2,7 @@ CXX=		g++
 CXXFLAGS=	-g -Wall -std=gnu++11
 SHELL=		bash
 
-all:		src/lib_info
+all:		lib_info
 
 lib_info:	lib_info.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $^
