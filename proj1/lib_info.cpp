@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 
@@ -37,7 +38,14 @@ string secToTime(int time)
 }
 
 
-int main() {
+int main(int argc, char *argv[]) {
+
+	if(argc != 2) {
+
+		cerr << "Usage: " << argv[0] << " <filename>" << endl;
+		return 0;
+
+	}
 
 	int timeInSec, track;
 
@@ -53,11 +61,16 @@ int main() {
 	map<string, int>::iterator albumIt;
 	map<string, map<string, int>>::iterator artistIt;
 
-	while (getline(cin, line))	{
+	ifstream file(argv[1]);
 
-		stringstream musicLine(line);
+	if (!file) {
 
-		musicLine >> title >> time >> artist >> album >> genre >> track;
+		cerr << "Error opening file: " << argv[1] << endl;
+		return 0;
+	}
+
+	
+		while (file >> title >> time >> artist >> album >> genre >> track) {
 	
 		title = replaceUnderscores(title);
 		artist = replaceUnderscores(artist);
