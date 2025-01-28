@@ -1,3 +1,9 @@
+//Student Names: David Carpenter and Michael Batchelor
+//David NetID:
+//David StudentID:
+//Michael NetID: mbatche1
+//Michael StudentID: 000663958
+
 #include <iostream>
 #include <map>
 #include <sstream>
@@ -18,7 +24,7 @@ int timeToSec(string timestr) {
 
 	int min, sec;
 
-	char colon;
+	char colon;//ignored, used to simplify the stringstream
 
 	istringstream ss(timestr);
 
@@ -57,6 +63,7 @@ int main(int argc, char *argv[]) {
 	map<string, map<int, string>> albums; //Album title + (Track number + Song title)
 	map<string, map<string, int>> artists; //Artist name + (Album + Total time)
 
+	//storing the data into maps enables the use of iterators 
 	map<int, string>::iterator songIt;
 	map<string, int>::iterator albumIt;
 	map<string, map<string, int>>::iterator artistIt;
@@ -70,7 +77,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	
-		while (file >> title >> time >> artist >> album >> genre >> track) {
+		while (file >> title >> time >> artist >> album >> genre >> track) {//stores all of the formatted data into their relevant maps
 	
 		title = replaceUnderscores(title);
 		artist = replaceUnderscores(artist);
@@ -86,30 +93,30 @@ int main(int argc, char *argv[]) {
 
 	}
 
-	for(artistIt = artists.begin(); artistIt != artists.end(); artistIt++)
+	for(artistIt = artists.begin(); artistIt != artists.end(); artistIt++)//iterates through each artist
 	{
 		int artistTime = 0;
 		int songCount = 0;
 
 
-		for(albumIt = artistIt->second.begin(); albumIt != artistIt->second.end(); albumIt++)
+		for(albumIt = artistIt->second.begin(); albumIt != artistIt->second.end(); albumIt++)//iterate through each album for a given artist
 		{
-			artistTime += albumIt->second;
-			songCount += albums[albumIt->first].size();
+			artistTime += albumIt->second;//determines total length of all songs in all albums and the number of songs
+			songCount += albums[albumIt->first].size();// ^^
 		}
 
-		cout << artistIt->first << ": " << songCount << ", " << secToTime(artistTime) << endl;
+		cout << artistIt->first << ": " << songCount << ", " << secToTime(artistTime) << endl;//artist's song count and total album duration
 
 
-		for(albumIt = artistIt->second.begin(); albumIt != artistIt->second.end(); albumIt++)
+		for(albumIt = artistIt->second.begin(); albumIt != artistIt->second.end(); albumIt++)//iterate through each album for a given artist
 		{
 
-			cout << "        " << albumIt->first << ": " << secToTime(albumIt->second) << endl;
+			cout << "        " << albumIt->first << ": " << secToTime(albumIt->second) << endl;//album's song count and total duration
 
-			for(songIt = albums[albumIt->first].begin(); songIt != albums[albumIt->first].end(); songIt++)
+			for(songIt = albums[albumIt->first].begin(); songIt != albums[albumIt->first].end(); songIt++)//iterate through each song in a given album
 			{
 				
-				cout << "                " << songIt->first << ". " << songIt->second << ": " << secToTime(songs[songIt->second]) << endl;
+				cout << "                " << songIt->first << ". " << songIt->second << ": " << secToTime(songs[songIt->second]) << endl;//duration of the song
 			}
 		}
 	}
