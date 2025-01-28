@@ -45,13 +45,13 @@ int main() {
 
 	string title, time, artist, album, genre;
 	
-    map<string, map<string, int>> songs; //Song title + (Genre + Duration in sec)
+    map<string, int> songs; //Song title + Duration in sec
 	map<string, map<int, string>> albums; //Album title + (Track number + Song title)
 	map<string, map<string, int>> artists; //Artist name + (Album + Total time)
 
-	map<int, map<string, int>>::const_iterator songIt;
-	map<string, map<int, string>>::const_iterator albumIt;
-	map<string, map<string, int>>::const_iterator artistIt;
+	map<int, string>::iterator songIt;
+	map<string, int>::iterator albumIt;
+	map<string, map<string, int>>::iterator artistIt;
 
 	while (getline(cin, line))	{
 
@@ -66,14 +66,40 @@ int main() {
 
 		timeInSec = timeToSec(time);
 
-		songs[title][genre] = timeInSec;
+		songs[title] = timeInSec;
 		artists[artist][album] += timeInSec;
 		albums[album][track] = title;
 
-	    cout << "Title: " << title << ", Time: " << time << ", Artist: " << artist << ", Album: " << album << ", Genre: " << genre << ", Track: " << track << endl;
 
 	}
 
+	for(artistIt = artists.begin(); artistIt != artists.end(); artistIt++)
+	{
+		int artistTime = 0;
+		int songCount = 0;
+
+
+		for(albumIt = artistIt->second.begin(); albumIt != artistIt->second.end(); albumIt++)
+		{
+			artistTime += albumIt->second;
+			songCount += albums[albumIt->first].size();
+		}
+
+		cout << artistIt->first << ": " << songCount << ", " << secToTime(artistTime) << endl;
+
+
+		for(albumIt = artistIt->second.begin(); albumIt != artistIt->second.end(); albumIt++)
+		{
+
+			cout << "        " << albumIt->first << ": " << secToTime(albumIt->second) << endl;
+
+			for(songIt = albums[albumIt->first].begin(); songIt != albums[albumIt->first].end(); songIt++)
+			{
+				
+				cout << "                " << songIt->first << ". " << songIt->second << ": " << secToTime(songs[songIt->second]) << endl;
+			}
+		}
+	}
 
 return 0;
 
