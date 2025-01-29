@@ -5,104 +5,73 @@
 //Michael StudentID: 000663958
 
 #include <iostream>
-#include <string>
-#include <map>
-#include <sstream>
 #include <fstream>
-#include <vector>
-
+#include <sstream>
+#include <map>
+#include <string>
+#include <iomanip>
 
 using namespace std;
 
+// Define Song struct
+struct Song {
+    string title;
+    int duration;  // in seconds
+    int track;
+
+    Song(string t, int d, int tr) : title(t), duration(d), track(tr) {}
+};
+
+// Define Album struct
+struct Album {
+    string name;
+    map<int, Song> songs; // map track number to Song
+    int songCount;
+    int totalDuration;  // in seconds
+
+    Album(string n) : name(n), songCount(0), totalDuration(0) {}
+
+    // Add a song to the album
+    void addSong(const Song &song) {
+        songs[song.track] = song;
+        songCount++;
+        totalDuration += song.duration;
+    }
+};
+
+// Define Artist struct
+struct Artist {
+    string name;
+    map<string, Album> albums;  // map album name to Album
+    int songCount;
+    int totalDuration;  // in seconds
+
+    Artist(string n) : name(n), songCount(0), totalDuration(0) {}
+
+    // Add an album to the artist
+    void addAlbum(const Album &album) {
+        albums[album.name] = album;
+        songCount += album.songCount;
+        totalDuration += album.totalDuration;
+    }
+};
+
+// Helper function to replace underscores with spaces
 string replaceUnderscores(string str) {
-
-  for (size_t i = 0; i < str.length(); ++i) {
-	          if (str[i] == '_') str[i] = ' ';
-	
-  }
-      return str;
+    for (size_t i = 0; i < str.length(); i++) {
+        if (str[i] == '_') {
+            str[i] = ' ';
+        }
+    }
+    return str;
 }
 
-int timeToSec(string timeStr) {
-
-	int min, sec;
-
-	char colon;//ignored, used to simplify the stringstream
-
-	istringstream ss(timeStr);
-
-	if (!(ss >> min >> colon >> sec) || colon != ':' || sec < 0 || sec >= 60) {
-		throw std::invalid_argument("Invalid time format: " + timeStr);
-	}
-
-	return min * 60 + sec;
+// Helper function to convert time (m:ss) to seconds
+int timeToSec(const string &time) {
+    int minutes, seconds;
+    sscanf(time.c_str(), "%d:%d", &minutes, &seconds);
+    return minutes * 60 + seconds;
 }
-
-string secToTime(int time)
-{
-	int min, sec;
-	
-	min = time / 60;
-	sec = time % 60;
-
-	return to_string(min) + ":" + (sec < 10 ? "0" : "") + to_string(sec);
-}
-
-
-	
-	// Define Song struct
-	 struct Song {
-
-	     string title;
-	     int duration;
-	     int track;
-
-	     Song(string t, int d, int tr) : title(t), duration(d), track(tr) {}
-
-	 };
-	
-	 // Define Album struct
-	 struct Album {
-
-	     string name;
-	     map<int, Song> songs;
-	     int songCount;
-		 int totalDuration;
-		 
-		  Album() : name(""), totalDuration(0), songCount(0) {}  // Default constructor
-		  Album(string n) : name(n), totalDuration(0), songCount(0) {}  // Parameterized constructor
-	                                         
-	    //Add song to album
-         void addSong(const Song &song) {
-
-			songs[song.track] = song;
-			songCount++;
-			totalDuration += song.duration;
-
-	     }
-
-	 };
-	
-	 // Define Artist struct
-	 struct Artist {
-
-	     string name;
-	     map<string, Album> albums;
-	     int totalDuration;
-	     int songCount;
-	
-		 Artist() : name(""), totalDuration(0), songCount(0) {}  // Default constructor
-	     Artist(string n) : name(n), totalDuration(0), songCount(0) {}
-	
-	     // Add album to artist
-	     void addAlbum(const Album &album) {
-	     albums[album.name] = album;
-	     songCount += album.songCount;
-	     totalDuration += album.totalDuration;
-		 
-		 } 
-	};
-
 
 int main(int argc, char *argv[]) {
 
