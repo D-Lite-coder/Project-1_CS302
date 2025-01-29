@@ -106,80 +106,75 @@ string secToTime(int time)
 
 int main(int argc, char *argv[]) {
 
-	
-	if(argc != 2) 
-	{
+    if(argc != 2) {
+        cerr << "Usage: " << argv[0] << " <filename>" << endl;
+        return 0;
+    }
 
-		cerr << "Usage: " << argv[0] << " <filename>" << endl;
-		return 0;
+    ifstream file(argv[1]);
 
-	}
+    if (!file) {
+        cerr << "Error opening file: " << argv[1] << endl;
+        return 0;
+    }
 
-	int timeInSec, track;
-	string title, time, artist, album, genre;
-	map<string, Artist> artists;
+    string title, time, artist, album, genre;
+    int track;
+    int timeInSec;
 
-	
-	map<string, Artist>::iterator artistIt;
-	map<string, Album>::iterator albumIt;
-	map<int, Song>::iterator songIt;
+    // Map to store Artist -> Artist
+    map<string, Artist> artists;
 
+    // Process each line in the file
+    while (file >> title >> time >> artist >> album >> genre >> track) {
+        title = replaceUnderscores(title);
+        artist = replaceUnderscores(artist);
+        album = replaceUnderscores(album);
 
-	ifstream file(argv[1]);
+        // Convert time to seconds
+        timeInSec = timeToSec(time);
 
-	if (!file) {
+        // Create a new Song object
+        Song newSong(title, timeInSec, track);
 
-		cerr << "Error opening file: " << argv[1] << endl;
-		return 0;
-	}
+        // Check if the artist exists in the map, otherwise create it
+        if (artists.find(artist) == artists.end()) {
+            artists[artist] = Artist(artist);
+        }
 
-	
-		while (file >> title >> time >> artist >> album >> genre >> track) {//stores all of the formatted data into their relevant maps
-	
-		title = replaceUnderscores(title);
-		artist = replaceUnderscores(artist);
-		album = replaceUnderscores(album);
+        // Check if the album exists under the artist, otherwise create it
+        if (artists[artist].albums.find(album) == artists[artist].albums.end()) {
+            artists[artist].albums[album] = Album(album);
+        }
 
-		timeInSec = timeToSec(time);
+        // Add the song to the album
+        artists[artist].albums[album].addSong(newSong);
 
-		Song newSong(title, timeInSec, track);
+        // Add the album to the artist
+        artists[artist].addAlbum(artists[artist].albums[album]);
+    }
 
-		if(artists.find(artist) = artist.end()) {
-		
-			artists[artist] = Artist(artist);
-		}
+    // Output the data in the required format
+    for (map<string, Artist>::iterator artistIt = artists.begin(); artistIt != artists.end(); ++artistIt) {
+        // Print artist info
+        cout << artistIt->first << ": " << artistIt->second.songCount << ", " 
+             << artistIt->second.totalDuration / 60 << ":" << setw(2) << setfill('0') 
+             << artistIt->second.totalDuration % 60 << endl;
 
-		if (artists[artist].albums.find(album) == artists[artist].albums.end()) {
+        // Print albums for each artist
+        for (map<string, Album>::iterator albumIt = artistIt->second.albums.begin(); albumIt != artistIt->second.albums.end(); ++albumIt) {
+            cout << "        " << albumIt->first << ": " << albumIt->second.songCount << ", " 
+                 << albumIt->second.totalDuration / 60 << ":" << setw(2) << setfill('0') 
+                 << albumIt->second.totalDuration % 60 << endl;
 
-			artists[artist].albums[album] = Album(album);			
-		}
+            // Print songs for each album
+            for (map<int, Song>::iterator songIt = albumIt->second.songs.begin(); songIt != albumIt->second.songs.end(); ++songIt) {
+                cout << "                " << songIt->first << ". " << songIt->second.title << ": " 
+                     << songIt->second.duration / 60 << ":" << setw(2) << setfill('0') 
+                     << songIt->second.duration % 60 << endl;
+            }
+        }
+    }
 
-		artists[artist].albums[album].addSong(newSong);
-
-		artists[artist].addAlbum(artists[artist].albums[album]);
-
-		}
-
-		for (artistIt = artists.begin(); artistIt != artists.end(); ++artistIt) {
-
-			//Print artist info
-			cout << artistIt->first << ": " << artistIt->second.songCount << ", " << secToTime(artistIt->second.totalDuration) << endl;
-					
-			//Print albums for each artist
-			for (albumIt = artistIt->second.albums.begin(); albumIt != artistIt->second.albums.end(); ++albumIt) {
-
-				cout << "        " << albumIt->first << ": " << albumIt->second.songCount << ", " << secToTime(albumIt->second.totalDuration) << endl;
-						
-				// Print songs for each album
-				for (songIt = albumIt->second.songs.begin(); songIt != albumIt->second.songs.end(); ++songIt) {
-
-	                cout << "                " << songIt->first << ". " << songIt->second.title << ": " << secToTime(songIt->second.duration) << endl;
-				}
-			}
-		}					
-	
-				
-
-return 0;
-
+    return 0;
 }
