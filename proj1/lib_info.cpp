@@ -1,6 +1,6 @@
 //Student Names: David Carpenter and Michael Batchelor
-//David NetID:
-//David StudentID:
+//David NetID: dcarpe23
+//David StudentID: 000722316
 //Michael NetID: mbatche1
 //Michael StudentID: 000663958
 
@@ -8,8 +8,6 @@
 #include <fstream>
 #include <sstream>
 #include <map>
-#include <vector>
-#include <algorithm>
 
 using namespace std;
 
@@ -51,10 +49,15 @@ string secondsToTime(int total_seconds) {
 }
 
 // Function to replace underscores with spaces
-string formatString(const string &input) {
-    string formatted = input;
-    replace(formatted.begin(), formatted.end(), '_', ' ');
-    return formatted;
+string replaceUnderscores(string str) {
+
+	  for (size_t i = 0; i < str.length(); ++i) {
+
+		 if (str[i] == '_') str[i] = ' ';
+					
+	  }
+
+	 return str;
 }
 
 int main(int argc, char *argv[]) {
@@ -72,32 +75,42 @@ int main(int argc, char *argv[]) {
     map<string, Artist> library;
     string title, time, artist, album, genre, track;
 
-    while (file >> title >> time >> artist >> album >> genre >> track) {
-        string formattedTitle = formatString(title);
-        string formattedArtist = formatString(artist);
-        string formattedAlbum = formatString(album);
-        int trackNum = stoi(track);
-        int songSeconds = timeToSeconds(time);
+    int songSeconds;
+	int trackNum;
+
+    map<string, Artist>::iterator artistIt;
+    map<string, Album>::const_iterator albumIt;
+    map<int, Song>::const_iterator songIt;
+
+    while (file >> title >> time >> artist >> album >> genre >> track) { //collect data from file
+
+		//format data
+        title = replaceUnderscores(title);
+        artist = replaceUnderscores(artist);
+		album = replaceUnderscores(album);
+        trackNum = stoi(track);
+        songSeconds = timeToSeconds(time);
         
-        library[formattedArtist].total_songs++;
-        library[formattedArtist].total_seconds += songSeconds;
-        library[formattedArtist].albums[formattedAlbum].total_songs++;
-        library[formattedArtist].albums[formattedAlbum].total_seconds += songSeconds;
-        library[formattedArtist].albums[formattedAlbum].songs[trackNum] = {formattedTitle, time, trackNum};
+		//input all data into structures
+        library[artist].total_songs++;
+        library[artist].total_seconds += songSeconds;
+        library[artist].albums[album].total_songs++;
+        library[artist].albums[album].total_seconds += songSeconds;
+        library[artist].albums[album].songs[trackNum] = {title, time, trackNum};
     }
     
     // Output the sorted data
-    for (map<string, Artist>::iterator artistIt = library.begin(); artistIt != library.end(); ++artistIt) {
+    for (artistIt = library.begin(); artistIt != library.end(); ++artistIt) {
         const string &artistName = artistIt->first;
         const Artist &artist = artistIt->second;
         cout << artistName << ": " << artist.total_songs << ", " << secondsToTime(artist.total_seconds) << endl;
         
-        for (map<string, Album>::const_iterator albumIt = artist.albums.begin(); albumIt != artist.albums.end(); ++albumIt) {
+        for (albumIt = artist.albums.begin(); albumIt != artist.albums.end(); ++albumIt) {
             const string &albumName = albumIt->first;
             const Album &album = albumIt->second;
             cout << "        " << albumName << ": " << album.total_songs << ", " << secondsToTime(album.total_seconds) << endl;
             
-            for (map<int, Song>::const_iterator songIt = album.songs.begin(); songIt != album.songs.end(); ++songIt) {
+            for (songIt = album.songs.begin(); songIt != album.songs.end(); ++songIt) {
                 const Song &song = songIt->second;
                 cout << "                " << song.track << ". " << song.title << ": " << song.time << endl;
             }
