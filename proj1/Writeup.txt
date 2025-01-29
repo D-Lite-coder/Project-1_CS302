@@ -1,4 +1,5 @@
-1. David Carpenter and Michael
+1. David Carpenter and Michael Batchelor
 2. D-Lite-coder and MichaelB865
 3. https://github.com/D-Lite-coder/Project-1_CS302.git
-4.
+4. g++ -g -Wall -std=gnu++11 -o lib_info lib_info.cpp
+5. As this was our first time using github, it was very difficult to collaborate on this project. regardless of this fact we were able to collaborate enough to complete the project. David made the base of the program. He did most of the conceptual work while Micheal worked as a troubleshooter. Micheal also did the commenting work.
